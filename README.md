@@ -1,3 +1,6 @@
+
+<img width="1894" alt="Screenshot 2025-01-19 at 11 15 40 AM" src="https://github.com/user-attachments/assets/612ea809-5a77-42a7-9bf4-76f3dccdd21e" />
+
 ## About the Project
 "Keep My Wife's Name Out Your Fkn Mouth" is the multiplayer game you didn’t know you needed. It lets you challenge your friends to epic virtual slap battles without the risk of losing teeth or friendships! Imagine the thrill of slapping your bestie into next Tuesday, live streaming the chaos on StreamPlace, and watching the internet cheer—or roast—you in real-time. Think of it as combining the intensity of a UFC fight with the humor of a comedy roast, minus the medical bills.
 
