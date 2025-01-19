@@ -19,7 +19,7 @@ export default function RoomInfo({ roomId }: RoomInfoProps) {
   };
 
   return (
-    <div className="absolute top-4 left-4 bg-black/50 p-3 rounded-lg text-white font-mono text-sm backdrop-blur-sm">
+    <div className="absolute top-4 left-4 bg-black/50 p-3 rounded-lg text-white text-sm backdrop-blur-sm">
       <div className="flex flex-col gap-2">
         <div>
           Room ID: <span className="font-bold">{roomId}</span>

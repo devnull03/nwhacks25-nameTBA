@@ -84,7 +84,7 @@ export default function StatsOverlay({
 	}, [isRemoteColliding, remoteHandSpeed, remotePreviousHandPositionRef]);
 
 	return (
-		<div className="bg-black/50 p-4 rounded-lg text-white font-mono">
+		<div className="bg-black/50 p-4 rounded-lg text-white">
 			<div className="grid grid-cols-2 gap-4">
 				{/* Local Stats */}
 				<div className="flex flex-col gap-2">
