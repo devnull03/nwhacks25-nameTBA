@@ -33,6 +33,7 @@ export default function Home() {
     "Will Smith Oscar moment...",
     "Type 'EMOTIONAL DAMAGE'...",
   ];
+  
 
   const memeCards = [
     {
