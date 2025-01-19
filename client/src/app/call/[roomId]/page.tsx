@@ -5,9 +5,9 @@ import React, { useRef, useState } from 'react';
 import { useParams } from 'next/navigation';
 import useMediapipe from '../hooks/useMediapipe';
 import useSocketIO from '../hooks/useSocketIO';
-import RemoteVideoSection from '@/components/RemoteVideoSection';
-import StatsOverlay from '@/components/StatsOverlay';
-import LocalVideoSection from '@/components/LocalVideoSection';
+import { RemoteVideoSection } from '@/components/RemoteVideoSection';
+import { StatsOverlay } from '@/components/StatsOverlay';
+import { LocalVideoSection } from '@/components/LocalVideoSection';
 import useWebRTC from '../hooks/useWebRTC';
 
 
@@ -64,25 +64,26 @@ export default function CallPage() {
   });
 
   return (
-    <div className="relative w-full h-screen bg-gray-800">
-      <div className="grid grid-cols-2 gap-4 p-4">
-        {/* LOCAL side */}
-        <LocalVideoSection
-          localVideoRef={localVideoRef}
-          localFaceCanvasRef={localFaceCanvasRef}
-          remoteHandCanvasRef={remoteHandCanvasRef}
-        />
+    <div className="relative min-h-screen bg-gradient-to-b from-gray-900 to-gray-800">
+      <div className="container mx-auto px-4 py-6">
+        <div className="grid lg:grid-cols-2 gap-6">
+          {/* LOCAL side */}
+          <LocalVideoSection
+            localVideoRef={localVideoRef}
+            localFaceCanvasRef={localFaceCanvasRef}
+            remoteHandCanvasRef={remoteHandCanvasRef}
+          />
 
-        {/* REMOTE side */}
-        <RemoteVideoSection
-          remoteVideoRef={remoteVideoRef}
-          remoteStreamExists={remoteStreamExists}
-          remoteFaceCanvasRef={remoteFaceCanvasRef}
-          localHandCanvasRef={localHandCanvasRef}
-        />
+          {/* REMOTE side */}
+          <RemoteVideoSection
+            remoteVideoRef={remoteVideoRef}
+            remoteStreamExists={remoteStreamExists}
+            remoteFaceCanvasRef={remoteFaceCanvasRef}
+            localHandCanvasRef={localHandCanvasRef}
+          />
+        </div>
       </div>
 
-      {/* Stats HUD */}
       <StatsOverlay
         handSpeed={handSpeed}
         handDirection={handDirection}
