@@ -12,6 +12,7 @@ import useWebRTC from "../hooks/useWebRTC";
 import { playSound, renderVisual } from "@/lib/utilts";
 import { TimestampedPosition } from "@/interfaces/hand.model";
 import RoomInfo from "@/components/RoomInfo";
+import { ScoreData } from "@/interfaces/stats.model";
 
 export default function CallPage() {
 	const { roomId } = useParams() as { roomId: string };
@@ -50,6 +51,15 @@ export default function CallPage() {
 	const remotePreviousHandPositionRef = useRef<TimestampedPosition | null>(
 		null
 	);
+
+	const [finalScoreData, setFinalScoreData] = useState<ScoreData>({
+		localHighestDamage: 0,
+		remoteHighestDamage: 0,
+		localHits: 0,
+		remoteHits: 0,
+		localHealth: 100,
+		remoteHealth: 100,
+	});
 
 	// -------------- Hooks: Socket + WebRTC --------------
 	const { socketRef } = useSocketIO(roomId);
@@ -118,6 +128,8 @@ export default function CallPage() {
 					isRemoteColliding={isRemoteColliding}
 					localPreviousHandPositionRef={localPreviousHandPositionRef}
 					remotePreviousHandPositionRef={remotePreviousHandPositionRef}
+					finalScoreData={finalScoreData}
+					setFinalScoreData={setFinalScoreData}
 				/>
 			</div>
 		</div>
