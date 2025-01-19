@@ -12,3 +12,13 @@ export interface DamageData {
     velocity: number;
     powerups: Powerup[];
 }
+
+export interface ScoreData {
+	localHighestDamage: number;
+	remoteHighestDamage: number;
+	localHits: number;
+	remoteHits: number;
+	localHealth: number;
+	remoteHealth: number;
+}
+
