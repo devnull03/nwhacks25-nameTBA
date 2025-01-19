@@ -88,6 +88,9 @@ export default function RoomPage() {
 	const [remoteHandDirection, setRemoteHandDirection] = useState<number>(0);
 	const [isRemoteColliding, setIsRemoteColliding] = useState<boolean>(false);
 
+	// First, add a state to track connection status
+	const [isConnected, setIsConnected] = useState(false);
+
 	// 1) Initialize Mediapipe tasks & canvas contexts
 	useEffect(() => {
 		const initializeLandmarkers = async () => {
@@ -206,15 +209,12 @@ export default function RoomPage() {
 
 					// Process hand movements and collisions
 					if (handResults?.landmarks && handResults.landmarks.length > 0) {
-						// Only process the first hand (index 0)
 						const handLandmarks = handResults.landmarks[0];
 						const currentHandBox = convertHandLandmarksToBoundingBox(handLandmarks);
 						const currentPosition: TimestampedPosition = {
 							box: currentHandBox,
 							timestamp
 						};
-
-						// console.log(previousHandPositionRef.current);
 
 						const previous = localPreviousHandPositionRef.current;
 
@@ -226,21 +226,21 @@ export default function RoomPage() {
 							);
 							const direction = calculateDirection(currentPosition.box, previous.box);
 
-							// Scale velocity to make it more readable
 							setHandSpeed(velocity * 1000);
 							setHandDirection(direction);
 
-							// Process face collision
+							// Check if local hand hits remote face
 							if (faceResults?.faceLandmarks?.[0]) {
 								const faceLandmarks = faceResults.faceLandmarks[0];
-								const faceBox = convertFaceLandmarksToBoundingBox(faceLandmarks);
-								const collision = checkCollision(currentPosition.box, faceBox);
+								const remoteFaceBox = convertFaceLandmarksToBoundingBox(faceLandmarks);
+								const collision = checkCollision(currentHandBox, remoteFaceBox);
 								setIsColliding(collision);
 
 								if (collision) {
 									socketRef.current?.emit('collision', {
 										roomId,
 										data: {
+											type: 'local-hit',
 											speed: velocity,
 											direction,
 											timestamp
@@ -250,7 +250,6 @@ export default function RoomPage() {
 							}
 						}
 
-						// Update the ref with current position
 						localPreviousHandPositionRef.current = currentPosition;
 					}
 
@@ -347,10 +346,11 @@ export default function RoomPage() {
 							setRemoteHandSpeed(velocity * 1000);
 							setRemoteHandDirection(direction);
 					
+							// Check if remote hand hits local face
 							if (faceResults?.faceLandmarks?.[0]) {
 								const faceLandmarks = faceResults.faceLandmarks[0];
-								const faceBox = convertFaceLandmarksToBoundingBox(faceLandmarks);
-								const collision = checkCollision(currentPosition.box, faceBox);
+								const localFaceBox = convertFaceLandmarksToBoundingBox(faceLandmarks);
+								const collision = checkCollision(currentHandBox, localFaceBox);
 								setIsRemoteColliding(collision);
 							}
 						}
@@ -377,139 +377,157 @@ export default function RoomPage() {
 		};
 	}, [localFaceLandmarker, localHandLandmarker, remoteStreamExists]);
 
-	// 3) WebRTC + Socket.IO logic
+	// Then modify the WebRTC + Socket.IO logic useEffect:
+
 	useEffect(() => {
 		if (!roomId) return;
 
-		// 1) Connect to Socket.IO
-		socketRef.current = io("https://nwhacks25-nametba.onrender.com", {
-			transports: ["websocket"],
-		});
+		let pc: RTCPeerConnection | null = null;
+		let localStream: MediaStream | null = null;
 
-		// 2) Create RTCPeerConnection
-		const configuration: RTCConfiguration = {
-			iceServers: [
-				{ urls: "stun:stun.l.google.com:19302" },
-				{ urls: "stun:stun1.l.google.com:19302" },
-			],
-		};
-		const pc = new RTCPeerConnection(configuration);
-		peerConnectionRef.current = pc;
-
-		// 3) Socket events
-		socketRef.current.on("connect", () => {
-			console.log("Connected to signaling server:", socketRef.current.id);
-			socketRef.current.emit("join-room", roomId);
-		});
-
-		// 4) Handle remote track
-		pc.ontrack = (event) => {
-			console.log("Got remote track:", event.streams[0]);
-			if (remoteVideoRef.current && event.streams[0]) {
-				remoteVideoRef.current.srcObject = event.streams[0];
-				setRemoteStreamExists(true);
-			}
-		};
-
-		// 5) ICE candidates
-		pc.onicecandidate = (event) => {
-			if (event.candidate) {
-				socketRef.current.emit("signal", {
-					roomId,
-					data: { candidate: event.candidate },
-				});
-			}
-		};
-
-		pc.onconnectionstatechange = () => {
-			console.log("Connection state:", pc.connectionState);
-		};
-
-		pc.oniceconnectionstatechange = () => {
-			console.log("ICE connection state:", pc.iceConnectionState);
-		};
-
-		// 6) Get local stream
-		navigator.mediaDevices
-			.getUserMedia({
-				video: {
-					width: { ideal: 640 },
-					height: { ideal: 480 },
-					frameRate: { ideal: 30 },
-				},
-				audio: true,
-			})
-			.then((stream) => {
-				if (localVideoRef.current) {
-					localVideoRef.current.srcObject = stream;
-				}
-				stream.getTracks().forEach((track) => {
-					pc.addTrack(track, stream);
-				});
-			})
-			.catch((err) => console.error("getUserMedia error:", err));
-
-		// 7) Peer joined
-		socketRef.current.on("peer-joined", async (newPeerId: string) => {
-			console.log("Peer joined:", newPeerId);
-			if (socketRef.current.id < newPeerId) {
-				try {
-					await createOffer();
-				} catch (err) {
-					console.error("Error creating offer:", err);
-				}
-			}
-		});
-
-		// 8) Signaling
-		socketRef.current.on("signal", async ({ from, data }: any) => {
+		const initializeConnection = async () => {
 			try {
-				if (data.type === "offer") {
-					console.log("Received offer, creating answer");
-					await pc.setRemoteDescription(new RTCSessionDescription(data));
-					const answer = await pc.createAnswer();
-					await pc.setLocalDescription(answer);
-					socketRef.current.emit("signal", { roomId, data: answer });
-				} else if (data.type === "answer") {
-					console.log("Received answer");
-					await pc.setRemoteDescription(new RTCSessionDescription(data));
-				} else if (data.candidate) {
-					console.log("Received ICE candidate");
-					await pc.addIceCandidate(new RTCIceCandidate(data.candidate));
-				}
-			} catch (err) {
-				console.error("Error handling signal:", err);
-			}
-		});
+				// 1) Get local stream first
+				localStream = await navigator.mediaDevices.getUserMedia({
+					video: {
+						width: { ideal: 640 },
+						height: { ideal: 480 },
+						frameRate: { ideal: 30 },
+					},
+					audio: true,
+				});
 
-		return () => {
-			if (socketRef.current) {
-				socketRef.current.disconnect();
+				if (localVideoRef.current) {
+					localVideoRef.current.srcObject = localStream;
+				}
+
+				// 2) Create RTCPeerConnection
+				const configuration: RTCConfiguration = {
+					iceServers: [
+						{ urls: "stun:stun.l.google.com:19302" },
+						{ urls: "stun:stun1.l.google.com:19302" },
+					],
+				};
+				
+				pc = new RTCPeerConnection(configuration);
+				peerConnectionRef.current = pc;
+
+				// 3) Add tracks to PeerConnection
+				localStream.getTracks().forEach((track) => {
+					if (pc && localStream) {
+						pc.addTrack(track, localStream);
+					}
+				});
+
+				// 4) Connect to Socket.IO
+				socketRef.current = io("https://nwhacks25-nametba.onrender.com", {
+					transports: ["websocket"],
+				});
+
+				// 5) Handle remote track
+				pc.ontrack = (event) => {
+					console.log("Got remote track:", event.streams[0]);
+					if (remoteVideoRef.current && event.streams[0]) {
+						remoteVideoRef.current.srcObject = event.streams[0];
+						setRemoteStreamExists(true);
+					}
+				};
+
+				// 6) ICE candidates
+				pc.onicecandidate = (event) => {
+					if (event.candidate) {
+						socketRef.current?.emit("signal", {
+							roomId,
+							data: { candidate: event.candidate },
+						});
+					}
+				};
+
+				pc.onconnectionstatechange = () => {
+					console.log("Connection state:", pc?.connectionState);
+					setIsConnected(pc?.connectionState === 'connected');
+				};
+
+				pc.oniceconnectionstatechange = () => {
+					console.log("ICE connection state:", pc?.iceConnectionState);
+				};
+
+				// 7) Socket events
+				socketRef.current.on("connect", () => {
+					console.log("Connected to signaling server:", socketRef.current.id);
+					socketRef.current.emit("join-room", roomId);
+				});
+
+				// 8) Peer joined
+				socketRef.current.on("peer-joined", async (newPeerId: string) => {
+					console.log("Peer joined:", newPeerId);
+					if (socketRef.current.id < newPeerId && pc?.connectionState !== 'closed') {
+						try {
+							const offer = await pc.createOffer({
+								offerToReceiveAudio: true,
+								offerToReceiveVideo: true,
+							});
+							await pc.setLocalDescription(offer);
+							socketRef.current.emit("signal", {
+								roomId,
+								data: offer,
+							});
+						} catch (err) {
+							console.error("Error creating offer:", err);
+						}
+					}
+				});
+
+				// 9) Signaling
+				socketRef.current.on("signal", async ({ from, data }: any) => {
+					try {
+						if (!pc || pc.connectionState === 'closed') return;
+
+						if (data.type === "offer") {
+							console.log("Received offer, creating answer");
+							await pc.setRemoteDescription(new RTCSessionDescription(data));
+							const answer = await pc.createAnswer();
+							await pc.setLocalDescription(answer);
+							socketRef.current.emit("signal", { roomId, data: answer });
+						} else if (data.type === "answer") {
+							console.log("Received answer");
+							await pc.setRemoteDescription(new RTCSessionDescription(data));
+						} else if (data.candidate) {
+							console.log("Received ICE candidate");
+							await pc.addIceCandidate(new RTCIceCandidate(data.candidate));
+						}
+					} catch (err) {
+						console.error("Error handling signal:", err);
+					}
+				});
+			} catch (err) {
+				console.error("Error initializing connection:", err);
 			}
+		};
+
+		initializeConnection();
+
+		// Cleanup function
+		return () => {
+			// Stop all tracks in the local stream
+			localStream?.getTracks().forEach(track => track.stop());
+			
+			// Close peer connection
 			if (peerConnectionRef.current) {
 				peerConnectionRef.current.close();
+				peerConnectionRef.current = null;
 			}
+			
+			// Disconnect socket
+			if (socketRef.current) {
+				socketRef.current.disconnect();
+				socketRef.current = null;
+			}
+
+			setIsConnected(false);
+			setRemoteStreamExists(false);
 		};
 	}, [roomId]);
-
-	async function createOffer() {
-		try {
-			const pc = peerConnectionRef.current;
-			if (!pc) return;
-			console.log("Creating offer");
-			const offer = await pc.createOffer({
-				offerToReceiveAudio: true,
-				offerToReceiveVideo: true,
-			});
-			await pc.setLocalDescription(offer);
-			socketRef.current.emit("signal", {
-				roomId,
-				data: offer,
-			});
-		} catch (err) {
-			console.error("Error creating offer:", err);
-		}
-	}
 
 	// Add these functions to define the specific points we need
 	const drawFaceBoundingBox = (
@@ -677,11 +695,11 @@ export default function RoomPage() {
 
 				{/* Local Hand Canvas */}
 				<canvas
-					ref={remoteHandCanvasRef}
+					ref={localHandCanvasRef}
 					width={640}
 					height={480}
 					className="absolute top-0 left-0 w-full h-full rounded-lg pointer-events-none"
-					style={{ transform: "scaleX(-1)" }}
+					style={{ transform: "scaleX(1)" }}
 				/>
 			</div>
 
@@ -706,11 +724,11 @@ export default function RoomPage() {
 
 				{/* Remote Hand Canvas */}
 				<canvas
-					ref={localHandCanvasRef}
+					ref={remoteHandCanvasRef}
 					width={640}
 					height={480}
 					className="absolute top-0 left-0 w-full h-full rounded-lg pointer-events-none"
-					style={{ transform: "scaleX(1)" }}
+					style={{ transform: "scaleX(-1)" }}
 				/>
 			</div>
 
