@@ -8,6 +8,7 @@ import { RPCContext, RPCContextType, useRPC } from "@/lib/rpc/RPCProvider";
 import { rpc } from "@/lib/rpc";
 import { motion } from "framer-motion";
 import Image from "next/image";
+import { Bet__factory, Bet } from "@/lib/rpc/typechain-types";
 
 export default function Home() {
 	const [roomId, setRoomId] = useState("");
@@ -16,7 +17,7 @@ export default function Home() {
 	const router = useRouter();
 	const { address, connectWallet, balance, provider } = useRPC();
 
-	const [betAmount, setBetAmount] = useState(0);
+	const [betAmount, setBetAmount] = useState<number>(0);
 	const [friendAddress, setFriendAddress] = useState("");
 	const handleJoinRoom = (e: React.FormEvent) => {
 		e.preventDefault();
@@ -77,20 +78,7 @@ export default function Home() {
 					{address}: {balance} ETH
 				</div>
 			)}
-			<input
-				type="number"
-				placeholder="Bet amount: "
-				onChange={(e) => setBetAmount(+e.target.value)}
-				value={betAmount}
-				className="text-black"
-			/>
-			<input
-				type="type"
-				placeholder="Friend Address"
-				onChange={(e) => setFriendAddress(e.target.value)}
-				value={friendAddress}
-				className="text-black"
-			/>
+
 			<div className="max-w-md w-full space-y-8 text-center">
 				{/* Title with Slap Animation */}
 				<motion.div
@@ -140,6 +128,20 @@ export default function Home() {
 					className="bg-black/20 backdrop-blur-sm p-6 rounded-xl border border-gray-800 space-y-6"
 					whileHover={{ boxShadow: "0 0 20px rgba(255,0,0,0.1)" }}
 				>
+					<Input
+						type="number"
+						placeholder="Bet amount: "
+						onChange={(e) => setBetAmount(+e.target.value)}
+						value={betAmount}
+						className="bg-gray-900/50 border-gray-800 text-white placeholder-gray-500 h-12"
+					/>
+					<Input
+						type="type"
+						placeholder="Friend Address"
+						onChange={(e) => setFriendAddress(e.target.value)}
+						value={friendAddress}
+						className="bg-gray-900/50 border-gray-800 text-white placeholder-gray-500 h-12"
+					/>
 					<Button
 						onClick={handleCreateRoom}
 						className="w-full h-12 bg-gradient-to-r from-red-500 to-yellow-500 hover:from-red-600 hover:to-yellow-600 
