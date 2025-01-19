@@ -463,11 +463,11 @@ export default function RoomPage() {
 					console.log("Peer joined:", newPeerId);
 					if (socketRef.current.id < newPeerId && pc?.connectionState !== 'closed') {
 						try {
-							const offer = await pc.createOffer({
+							const offer = await pc?.createOffer({
 								offerToReceiveAudio: true,
 								offerToReceiveVideo: true,
 							});
-							await pc.setLocalDescription(offer);
+							await pc?.setLocalDescription(offer);
 							socketRef.current.emit("signal", {
 								roomId,
 								data: offer,
