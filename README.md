@@ -1,5 +1,5 @@
 ## About the Project
-Virtual Power Slap is the multiplayer game you didn’t know you needed. It lets you challenge your friends to epic virtual slap battles without the risk of losing teeth or friendships! Imagine the thrill of slapping your bestie into next Tuesday, live streaming the chaos on StreamPlace, and watching the internet cheer—or roast—you in real-time. Think of it as combining the intensity of a UFC fight with the humor of a comedy roast, minus the medical bills.
+"Keep My Wife's Name Out Your Fkn Mouth" is the multiplayer game you didn’t know you needed. It lets you challenge your friends to epic virtual slap battles without the risk of losing teeth or friendships! Imagine the thrill of slapping your bestie into next Tuesday, live streaming the chaos on StreamPlace, and watching the internet cheer—or roast—you in real-time. Think of it as combining the intensity of a UFC fight with the humor of a comedy roast, minus the medical bills.
 
 ## What Inspired Us
 The internet loves slap battles—those viral videos that make you laugh and question humanity at the same time. We thought, “Why let only professional slap artists have all the fun?” So, we decided to create a safe, interactive way to slap your friends silly while giving the world front-row seats to the showdown. It’s about settling petty rivalries, flexing your dodging skills, and proving who’s the slap champion—all without getting a concussion.
@@ -25,7 +25,7 @@ Here’s a cleaner and more polished version for the README:
 ---
 
 ## What We Learned
-Building *Virtual Power Slap* taught us valuable lessons:
+Building "Keep My Wife's Name Out Your Fkn Mouth" taught us valuable lessons:
 
 - *Mastering Real-Time Gameplay:* We honed our skills in latency reduction to ensure every slap and dodge happens instantly.  
 - *Efficient ML Integration:* Managing heavy machine learning models was key to keeping the game smooth and responsive.  
@@ -50,7 +50,7 @@ Building *Virtual Power Slap* taught us valuable lessons:
 ---
 
 ## The Experience
-*Virtual Power Slap* is more than a game—it’s a hilariously competitive arena. Whether you’re settling sibling rivalries, challenging friends, or entertaining your group chat with live matches, it’s all about chaotic fun. Grab a friend and get slapping!
+"Keep My Wife's Name Out Your Fkn Mouth" is more than a game—it’s a hilariously competitive arena. Whether you’re settling sibling rivalries, challenging friends, or entertaining your group chat with live matches, it’s all about chaotic fun. Grab a friend and get slapping!
 
 --- 
 
