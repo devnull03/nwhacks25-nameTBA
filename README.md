@@ -2,7 +2,7 @@
 <img width="1894" alt="Screenshot 2025-01-19 at 11 15 40 AM" src="https://github.com/user-attachments/assets/612ea809-5a77-42a7-9bf4-76f3dccdd21e" />
 
 ## About the Project
-"Keep My Wife's Name Out Your Fkn Mouth" is the multiplayer game you didn’t know you needed. It lets you challenge your friends to epic virtual slap battles without the risk of losing teeth or friendships! Imagine the thrill of slapping your bestie into next Tuesday, live streaming the chaos on StreamPlace, and watching the internet cheer—or roast—you in real-time. Think of it as combining the intensity of a UFC fight with the humor of a comedy roast, minus the medical bills.
+"Slap Game" is the multiplayer game you didn’t know you needed. It lets you challenge your friends to epic virtual slap battles without the risk of losing teeth or friendships! Imagine the thrill of slapping your bestie into next Tuesday, live streaming the chaos on StreamPlace, and watching the internet cheer—or roast—you in real-time. Think of it as combining the intensity of a UFC fight with the humor of a comedy roast, minus the medical bills.
 
 ## What Inspired Us
 The internet loves slap battles—those viral videos that make you laugh and question humanity at the same time. We thought, “Why let only professional slap artists have all the fun?” So, we decided to create a safe, interactive way to slap your friends silly while giving the world front-row seats to the showdown. It’s about settling petty rivalries, flexing your dodging skills, and proving who’s the slap champion—all without getting a concussion.
@@ -28,7 +28,7 @@ Here’s a cleaner and more polished version for the README:
 ---
 
 ## What We Learned
-Building "Keep My Wife's Name Out Your Fkn Mouth" taught us valuable lessons:
+Building "Slap Game" taught us valuable lessons:
 
 - *Mastering Real-Time Gameplay:* We honed our skills in latency reduction to ensure every slap and dodge happens instantly.  
 - *Efficient ML Integration:* Managing heavy machine learning models was key to keeping the game smooth and responsive.  
@@ -53,7 +53,7 @@ Building "Keep My Wife's Name Out Your Fkn Mouth" taught us valuable lessons:
 ---
 
 ## The Experience
-"Keep My Wife's Name Out Your Fkn Mouth" is more than a game—it’s a hilariously competitive arena. Whether you’re settling sibling rivalries, challenging friends, or entertaining your group chat with live matches, it’s all about chaotic fun. Grab a friend and get slapping!
+"Slap Game" is more than a game—it’s a hilariously competitive arena. Whether you’re settling sibling rivalries, challenging friends, or entertaining your group chat with live matches, it’s all about chaotic fun. Grab a friend and get slapping!
 
 --- 
 
