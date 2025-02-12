@@ -23,7 +23,6 @@ The internet loves slap battles—those viral videos that make you laugh and que
 - Solidity and Hardhat: Developed smart contracts, including BidFactory and Bid, to handle bidding logic securely. Utilized Chai and Mocha for rigorous testing of smart contracts. Implemented an RPC protocol to connect the smart contracts with the frontend seamlessly.
 
 - Stream.place: Enabled live streaming of the game directly on the website. Provided players and spectators with a seamless and interactive viewing experience.
-Here’s a cleaner and more polished version for the README:
 
 ---
 
